@@ -1,4 +1,5 @@
 "use client";
+import AnimatedButton from "../ui/AnimatedButton";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -11,13 +12,13 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/30 backdrop-blur">
+    <header className="sticky top-0 z-50  w-full border-b border-white/10 bg-black/30 backdrop-blur">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="text-white font-semibold text-lg">
+        <Link href="/" className="text-white font-semibold text-xl">
           CIVICO
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8 text-sm text-white/90">
+        <nav className="hidden md:flex items-center gap-8 text-md text-white/90">
           <Link href="#" className="hover:text-indigo-400">Dashboard</Link>
           <Link href="#" className="hover:text-indigo-400">Civic Posts</Link>
           <Link href="#" className="hover:text-indigo-400">Profile</Link>
@@ -25,22 +26,23 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
         </nav>
 
         <div className="flex items-center gap-4">
-          {variant === "public" && (
-            <Link
-              href="/signup"
-              className="hidden md:inline-block bg-indigo-600 px-5 py-2 text-sm font-medium hover:bg-indigo-700"
-            >
-              Sign up
-            </Link>
-          )}
+  {variant === "public" && (
+    <AnimatedButton
+      text="Sign up"
+      href="/signup"
+      className="hidden md:inline-flex"
+    />
+  )}
 
-          <button
-            onClick={() => setMenuOpen(true)}
-            className="md:hidden text-white"
-          >
-            ☰
-          </button>
-        </div>
+  <button
+    onClick={() => setMenuOpen(true)}
+    className="md:hidden text-white"
+    aria-label="Open menu"
+  >
+    ☰
+  </button>
+</div>
+
       </div>
 
       {menuOpen && (

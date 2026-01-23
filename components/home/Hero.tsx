@@ -1,26 +1,26 @@
 "use client";
-
 import { useState } from "react";
+import RoleCard from "../ui/RoleCard";
 
 export default function Hero() {
   const [text, setText] = useState("");
 
   return (
-    <section className="relative min-h-[90vh] flex flex-col items-center justify-center text-white px-6">
+    <section className="relative min-h-[90vh]  flex flex-col items-center justify-center text-white px-6">
       {/* Background */}
       <div className="absolute inset-0 -z-10 bg-gradient-to-br from-indigo-900 via-black to-indigo-800" />
 
       {/* Badge */}
-      <div className="mb-6 flex items-center gap-2 border border-white/20 px-4 py-1 rounded-full text-sm">
+      <div className="mb-6 flex mt-10 items-center gap-2 border border-white/20 px-4 py-1 rounded-full text-sm">
         <span className="bg-indigo-600 px-3 py-1 rounded-full text-xs">
           NEW
         </span>
-        <span>Building better civic engagement</span>
+        <span>Report. Track. Resolve.</span>
       </div>
 
       {/* Heading */}
       <h1 className="text-center text-4xl md:text-6xl font-semibold max-w-3xl">
-        A Smarter Way to Manage Civic Issues
+        Modernizing How Civic Issues Are Handled
       </h1>
 
       {/* Subheading */}
@@ -43,6 +43,37 @@ export default function Hero() {
           Get Started
         </button>
       </div>
+
+      <section className="py-24 px-6 text-white">
+  <h2 className="text-center text-3xl md:text-4xl font-semibold">
+    Built for everyone involved
+  </h2>
+
+  <p className="text-center text-gray-400 mt-4 max-w-xl mx-auto">
+    A single platform designed to support every role in the civic ecosystem.
+  </p>
+
+  <div className="mt-16 grid gap-8 md:grid-cols-3 max-w-6xl mx-auto">
+    <RoleCard
+      icon="🧍"
+      title="Citizens"
+      description="Report local issues, follow updates in real time, and stay informed about what’s happening in your community."
+    />
+
+    <RoleCard
+      icon="🏢"
+      title="Departments"
+      description="Receive reports directly, post progress updates, and respond efficiently through a centralized system."
+    />
+
+    <RoleCard
+      icon="🛡️"
+      title="Administrators"
+      description="Oversee activity, moderate content, and ensure transparency and accountability across the platform."
+    />
+  </div>
+</section>
     </section>
+    
   );
 }
