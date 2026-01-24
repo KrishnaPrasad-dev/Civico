@@ -51,11 +51,14 @@ export default function LoginPage() {
     <section className="min-h-screen">
       <Navbar />
 
-      <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto min-h-screen">
+      <div className="flex flex-col items-center justify-center px-7 mb-12 mx-auto ">
         <div className="absolute top-0 z-[-2] h-screen w-screen bg-neutral-950 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]" />
+        <h1 className="text-3xl font-bold leading-tight mb-12 md:mt-12 mt-16 relative  tracking-tight text-gray-900 md:text-4xl dark:text-white">
+                Login Page
+              </h1>
 
         {/* Card */}
-        <div className="relative w-full sm:max-w-md bg-gray-800 rounded-xl border border-white/10 shadow-lg">
+        <div className="relative w-full sm:max-w-md  bg-gray-800 rounded-xl border border-white/10 shadow-lg">
           <div className="w-full bg-white rounded-lg shadow dark:bg-gray-950 dark:border-gray-900">
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
               <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
