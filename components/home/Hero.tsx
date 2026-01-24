@@ -5,41 +5,12 @@ import RoleCard from "../ui/RoleCard";
 import Hyperspeed from "../../Hyperspeed";
 
 export default function Hero() {
-  const [text, setText] = useState(false);
 
-  // Attach global pointer listeners (IMPORTANT)
-  useEffect(() => {
-    const down = () => {
-      document.documentElement.style.setProperty(
-        "--hyperspeed-boost",
-        "4.5"
-      );
-    };
-
-    const up = () => {
-      document.documentElement.style.setProperty(
-        "--hyperspeed-boost",
-        "1.6"
-      );
-    };
-
-    window.addEventListener("mousedown", down);
-    window.addEventListener("mouseup", up);
-    window.addEventListener("touchstart", down);
-    window.addEventListener("touchend", up);
-
-    return () => {
-      window.removeEventListener("mousedown", down);
-      window.removeEventListener("mouseup", up);
-      window.removeEventListener("touchstart", down);
-      window.removeEventListener("touchend", up);
-    };
-  }, []);
 
   return (
     <section className="relative overflow-hidden text-white">
       {/* ================= BACKGROUND ================= */}
-      <div className="absolute top-0 left-0 right-0 h-screen -z-20">
+      <div className="absolute top-0 left-0 right-0 h-screen -z-1">
         <Hyperspeed
           effectOptions={{
             distortion: "turbulentDistortion",
@@ -100,7 +71,7 @@ export default function Hero() {
           to resolve local issues transparently and efficiently.
         </p>
 
-        <div className="w-full max-w-xl mt-10 bg-white/10 border border-white/20 rounded-xl p-4">
+        <div className="w-full max-w-xl mt-10 bg-white/20 border border-white/20 rounded-xl p-4">
           <textarea
             placeholder="Describe a civic issue you want to report..."
             className="w-full bg-transparent outline-none resize-none text-gray-200 placeholder-gray-400"
