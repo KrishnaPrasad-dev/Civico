@@ -1,11 +1,13 @@
 "use client";
-
+import SplitText from "../animations/Splittext";
 import { useEffect, useState } from "react";
 import RoleCard from "../ui/RoleCard";
-import Hyperspeed from "../../Hyperspeed";
+import Hyperspeed from "../animations/hyperspeed";
 
 export default function Hero() {
-
+  const handleAnimationComplete = () => {
+    console.log("All letters have animated!");
+  };
 
   return (
     <section className="relative overflow-hidden text-white">
@@ -62,13 +64,27 @@ export default function Hero() {
           <span>Report. Track. Resolve.</span>
         </div>
 
-        <h1 className="text-center text-4xl md:text-6xl font-semibold max-w-3xl">
+        {/* <h1 className="text-center text-4xl md:text-6xl font-semibold max-w-3xl">
           Modernizing How Civic Issues Are Handled
-        </h1>
+        </h1> */}
+        <SplitText
+          text="Modernizing How Civic Issues Are Handled"
+          className="text-center text-4xl md:text-6xl font-semibold max-w-3xl"
+          delay={50}
+          duration={1.25}
+          ease="power3.out"
+          splitType="chars"
+          from={{ opacity: 0, y: 40 }}
+          to={{ opacity: 1, y: 0 }}
+          threshold={0.1}
+          rootMargin="-100px"
+          textAlign="center"
+          onLetterAnimationComplete={handleAnimationComplete}
+        />
 
         <p className="text-center text-gray-300 mt-4 max-w-xl">
-          CIVICO connects citizens, departments, and administrators
-          to resolve local issues transparently and efficiently.
+          CIVICO connects citizens, departments, and administrators to resolve
+          local issues transparently and efficiently.
         </p>
 
         <div className="w-full max-w-xl mt-10 bg-white/20 border border-white/20 rounded-xl p-4">
@@ -90,7 +106,8 @@ export default function Hero() {
         </h2>
 
         <p className="text-center text-gray-400 mt-4 max-w-xl mx-auto">
-          A single platform designed to support every role in the civic ecosystem.
+          A single platform designed to support every role in the civic
+          ecosystem.
         </p>
 
         <div className="mt-16 grid gap-8 md:grid-cols-3 max-w-6xl mx-auto">
