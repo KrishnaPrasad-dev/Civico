@@ -21,7 +21,7 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
         <nav className="hidden md:flex items-center gap-8 text-md text-white/90">
           <Link href="#" className="hover:text-indigo-400">Dashboard</Link>
           <Link href="#" className="hover:text-indigo-400">Civic Posts</Link>
-          <Link href="#" className="hover:text-indigo-400">Profile</Link>
+          <Link href="#" className="hover:text-indigo-400">Profile Section</Link>
           <Link href="#" className="hover:text-indigo-400">Roles</Link>
         </nav>
 
