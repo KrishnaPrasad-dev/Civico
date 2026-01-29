@@ -41,10 +41,10 @@ export async function POST(req: Request) {
       );
     }
 
-    // 6️⃣ Generate JWT token
+    // ✅ 6️⃣ Generate JWT token (FIXED PAYLOAD)
     const token = jwt.sign(
       {
-        userId: user._id,
+        id: user._id.toString(), // 🔥 THIS FIXES EVERYTHING
         role: user.role,
       },
       process.env.JWT_SECRET as string,
