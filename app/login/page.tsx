@@ -58,8 +58,8 @@ export default function LoginPage() {
               </h1>
 
         {/* Card */}
-        <div className="relative w-full sm:max-w-md  bg-gray-800 rounded-xl border border-white/10 shadow-lg">
-          <div className="w-full bg-white rounded-lg shadow dark:bg-gray-950 dark:border-gray-900">
+        <div className="relative w-full sm:max-w-md  bg-gray-800  rounded-3xl shadow-lg">
+          <div className="w-full bg-white rounded-3xl shadow dark:bg-gray-950 dark:border-gray-900">
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
               <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                 Log in to your Account

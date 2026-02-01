@@ -86,6 +86,21 @@ export default function EditProfilePage() {
     loadProfile()
   }, [])
 
+  useEffect(() => {
+  const draft = localStorage.getItem("issueDraft");
+
+  if (draft) {
+    setForm((prev) => ({
+      ...prev,
+      description: draft,
+    }));
+
+    // clean up after using it
+    localStorage.removeItem("issueDraft");
+  }
+}, []);
+
+
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
