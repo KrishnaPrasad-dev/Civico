@@ -128,7 +128,7 @@ export default function RaiseIssuePage() {
                 required
                 value={form.title}
                 onChange={handleChange}
-                className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white focus:ring-2 focus:ring-indigo-600"
+                className="w-full pr-4 py-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white focus:ring-2 focus:ring-indigo-600"
               />
             </div>
           </div>
@@ -147,7 +147,7 @@ export default function RaiseIssuePage() {
                 placeholder="Enter the issue description here"
                 value={form.description}
                 onChange={handleChange}
-                className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white focus:ring-2 focus:ring-indigo-600 resize-none"
+                className="w-full  pr-4 py-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white focus:ring-2 focus:ring-indigo-600 resize-none"
               />
             </div>
           </div>
