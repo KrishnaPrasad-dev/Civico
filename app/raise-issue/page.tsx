@@ -120,10 +120,11 @@ export default function RaiseIssuePage() {
               Issue Title
             </label>
             <div className="relative">
-              <AlertCircle size={18} className="absolute left-3 top-3 text-slate-400" />
+              
               <input
                 type="text"
                 name="title"
+                placeholder="Enter your issue here"
                 required
                 value={form.title}
                 onChange={handleChange}
@@ -138,11 +139,12 @@ export default function RaiseIssuePage() {
               Description
             </label>
             <div className="relative">
-              <FileText size={18} className="absolute left-3 top-3 text-slate-400" />
+              
               <textarea
                 name="description"
                 rows={4}
                 required
+                placeholder="Enter the issue description here"
                 value={form.description}
                 onChange={handleChange}
                 className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white focus:ring-2 focus:ring-indigo-600 resize-none"
@@ -159,6 +161,7 @@ export default function RaiseIssuePage() {
               <input
                 type="text"
                 name="location"
+                placeholder="Enter your location"
                 required
                 value={form.location}
                 onChange={handleChange}
