@@ -34,6 +34,26 @@ const IssueSchema = new Schema(
       type: String, // later you can switch to ObjectId
       required: true,
     },
+
+    // 🔥 NEW: voting system
+    votes: {
+      type: Number,
+      default: 0,
+    },
+
+    voters: [
+      {
+        userId: {
+          type: String, // same as userId above
+          required: true,
+        },
+        vote: {
+          type: Number, // 1 = upvote, -1 = downvote
+          enum: [1, -1],
+          required: true,
+        },
+      },
+    ],
   },
   { timestamps: true }
 )

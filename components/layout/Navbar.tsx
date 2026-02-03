@@ -28,8 +28,8 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
           <Link href="#" className="hover:text-indigo-400">
             Civic Posts
           </Link>
-          <Link href="#" className="hover:text-indigo-400">
-            Profile
+          <Link href="/issues" className="hover:text-indigo-400">
+            Issues
           </Link>
           <Link href="#" className="hover:text-indigo-400">
             Roles
