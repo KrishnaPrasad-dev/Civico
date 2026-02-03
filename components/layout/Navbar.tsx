@@ -78,11 +78,11 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
             </Link>
 
             <Link
-              href="#"
+              href="/issues"
               onClick={() => setMenuOpen(false)}
               className="hover:text-indigo-400"
             >
-              Profile
+              Issues
             </Link>
 
             <Link
