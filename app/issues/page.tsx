@@ -6,7 +6,7 @@ type Issue = {
   _id: string;
   title: string;
   description: string;
-  status: string;
+  status: "open" | "in_progress" | "resolved";
   createdAt: string;
   createdBy?: {
     fullname: string;
@@ -22,46 +22,20 @@ export default function IssuesPage() {
   useEffect(() => {
     const fetchIssues = async () => {
       try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-        // 🔍 Hard check for env var
-        if (!API_URL) {
-          throw new Error("NEXT_PUBLIC_API_URL is not defined");
-        }
-
-        console.log("Fetching from 👉", `${API_URL}/issues`);
-
-        const token = localStorage.getItem("token");
-
-        const res = await fetch(`${API_URL}/issues`, {
-          headers: {
-            "Content-Type": "application/json",
-            ...(token && { Authorization: `Bearer ${token}` }),
-          },
+        const res = await fetch("/api/issues", {
+          method: "GET",
+          cache: "no-store", // always get latest data
         });
 
-        // 🚨 Handle backend errors loudly
         if (!res.ok) {
-          const text = await res.text();
-          throw new Error(`API Error ${res.status}: ${text}`);
+          throw new Error(`Failed to fetch issues (${res.status})`);
         }
 
         const data = await res.json();
 
-        console.log("API response 👉", data);
-
-        // ✅ Adjust if backend response shape differs
-        if (Array.isArray(data)) {
-          setIssues(data);
-        } else if (Array.isArray(data.data)) {
-          setIssues(data.data);
-        } else if (Array.isArray(data.issues)) {
-          setIssues(data.issues);
-        } else {
-          throw new Error("Unexpected API response format");
-        }
+        // expected: { success: true, data: Issue[] }
+        setIssues(data.data || []);
       } catch (err: any) {
-        console.error(err);
         setError(err.message || "Something went wrong");
       } finally {
         setLoading(false);
@@ -71,7 +45,8 @@ export default function IssuesPage() {
     fetchIssues();
   }, []);
 
-  // ⏳ Loading state
+  /* -------------------- UI STATES -------------------- */
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-white">
@@ -80,12 +55,10 @@ export default function IssuesPage() {
     );
   }
 
-  // ❌ Error state
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center text-red-400">
-        <p className="text-lg font-semibold">Failed to load issues</p>
-        <p className="mt-2 text-sm">{error}</p>
+      <div className="min-h-screen flex items-center justify-center text-red-400">
+        {error}
       </div>
     );
   }
@@ -97,20 +70,24 @@ export default function IssuesPage() {
       {issues.length === 0 ? (
         <p className="text-slate-400">No issues found.</p>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {issues.map((issue) => (
             <div
               key={issue._id}
-              className="rounded-xl bg-slate-800/70 border border-slate-700 p-4"
+              className="rounded-xl bg-slate-800/70 border border-slate-700 p-5"
             >
-              <h2 className="text-xl font-semibold">{issue.title}</h2>
+              <h2 className="text-xl font-semibold mb-1">
+                {issue.title}
+              </h2>
 
-              <p className="text-slate-300 mt-1">
+              <p className="text-slate-300 text-sm mb-4">
                 {issue.description}
               </p>
 
-              <div className="flex justify-between mt-3 text-sm text-slate-400">
-                <span>Status: {issue.status}</span>
+              <div className="flex items-center justify-between text-xs text-slate-400">
+                <span className="capitalize">
+                  Status: {issue.status.replace("_", " ")}
+                </span>
                 <span>
                   {issue.createdBy?.fullname ?? "Anonymous"}
                 </span>
