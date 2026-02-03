@@ -44,9 +44,12 @@ export default function Dashboard() {
     try {
       const res = await fetch(`/api/issues?userId=${userId}`)
       const data = await res.json()
-      setIssues(data)
+
+      // ✅ FIX: extract issues array from API response
+      setIssues(data.data || [])
     } catch (error) {
       console.error('Failed to fetch issues', error)
+      setIssues([])
     } finally {
       setLoadingIssues(false)
     }
@@ -149,13 +152,15 @@ export default function Dashboard() {
                       {issue.title}
                     </h3>
 
-                    <span className={`text-xs px-3 py-1 w-fit rounded-full capitalize ${
-                      issue.status === 'pending'
-                        ? 'bg-yellow-500/20 text-yellow-400'
-                        : issue.status === 'in_progress'
-                        ? 'bg-blue-500/20 text-blue-400'
-                        : 'bg-green-500/20 text-green-400'
-                    }`}>
+                    <span
+                      className={`text-xs px-3 py-1 w-fit rounded-full capitalize ${
+                        issue.status === 'pending'
+                          ? 'bg-yellow-500/20 text-yellow-400'
+                          : issue.status === 'in_progress'
+                          ? 'bg-blue-500/20 text-blue-400'
+                          : 'bg-green-500/20 text-green-400'
+                      }`}
+                    >
                       {issue.status.replace('_', ' ')}
                     </span>
                   </div>
