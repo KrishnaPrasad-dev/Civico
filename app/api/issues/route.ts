@@ -1,63 +1,28 @@
-import { NextResponse } from 'next/server'
-import { connectDB } from '@/lib/db'
-import Issue from '@/models/Issue'
+import { NextResponse } from "next/server";
+import mongoose from "mongoose";
+import Issue from "@/models/Issue";
 
-export async function POST(req: Request) {
-  try {
-    await connectDB()
+const MONGO_URI = process.env.MONGO_URI!;
 
-    const body = await req.json()
-    console.log('CREATE ISSUE BODY:', body)
-
-    const { title, description, location, department, userId } = body
-
-    if (!title || !description || !location || !department || !userId) {
-      return NextResponse.json(
-        { message: 'All fields are required' },
-        { status: 400 }
-      )
-    }
-
-    const issue = await Issue.create({
-      title,
-      description,
-      location,
-      department,
-      userId,
-    })
-
-    return NextResponse.json(issue, { status: 201 })
-  } catch (error) {
-    console.error(error)
-    return NextResponse.json(
-      { message: 'Failed to create issue' },
-      { status: 500 }
-    )
-  }
+async function connectDB() {
+  if (mongoose.connection.readyState === 1) return;
+  await mongoose.connect(MONGO_URI);
 }
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
-    await connectDB()
+    await connectDB();
 
-    const { searchParams } = new URL(req.url)
-    const userId = searchParams.get('userId')
+    const issues = await Issue.find().sort({ createdAt: -1 });
 
-    if (!userId) {
-      return NextResponse.json(
-        { message: 'userId is required' },
-        { status: 400 }
-      )
-    }
-
-    const issues = await Issue.find({ userId }).sort({ createdAt: -1 })
-
-    return NextResponse.json(issues)
+    return NextResponse.json({
+      success: true,
+      data: issues,
+    });
   } catch (error) {
-    console.error(error)
     return NextResponse.json(
-      { message: 'Failed to fetch issues' },
+      { success: false, message: "Failed to fetch issues" },
       { status: 500 }
-    )
+    );
   }
 }
