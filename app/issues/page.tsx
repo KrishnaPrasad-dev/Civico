@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowBigUp, ArrowBigDown } from "lucide-react";
+import { ArrowBigUp } from "lucide-react";
 import Navbar from "../../components/layout/Navbar";
 
 type Issue = {
@@ -11,6 +11,7 @@ type Issue = {
   status: string;
   createdAt: string;
   votes: number;
+  hasVoted: boolean;
 };
 
 export default function IssuesPage() {
@@ -18,61 +19,50 @@ export default function IssuesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let isMounted = true;
-
     const loadIssues = async () => {
       try {
-        const res = await fetch("/api/issues");
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+        const res = await fetch("/api/issues", {
+          headers: {
+            "x-user-id": user.id || "",
+          },
+        });
+
         const data = await res.json();
-
-        if (!isMounted) return;
-
-        const sorted = (data.data || []).sort(
-          (a: Issue, b: Issue) => b.votes - a.votes
-        );
-
-        setIssues(sorted);
-        setLoading(false);
+        setIssues(data.data || []);
       } catch (error) {
         console.error("Failed to load issues", error);
-        if (isMounted) setLoading(false);
+      } finally {
+        setLoading(false);
       }
     };
 
     loadIssues();
-
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
-  const vote = async (issueId: string, value: 1 | -1) => {
-    try {
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const upvote = async (issueId: string) => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-      // ✅ FIXED URL
+    // ⚡ Optimistic UI (instant)
+    setIssues((prev) =>
+      prev.map((issue) =>
+        issue._id === issueId && !issue.hasVoted
+          ? { ...issue, votes: issue.votes + 1, hasVoted: true }
+          : issue
+      )
+    );
+
+    try {
       await fetch(`/api/issues/vote/${issueId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          userId: user.id,
-          vote: value,
-        }),
+        body: JSON.stringify({ userId: user.id }),
       });
-
-      // 🔄 refresh issues after vote
-      const res = await fetch("/api/issues");
-      const data = await res.json();
-
-      const sorted = (data.data || []).sort(
-        (a: Issue, b: Issue) => b.votes - a.votes
-      );
-
-      setIssues(sorted);
-    } catch (err) {
-      console.error("Voting failed", err);
+    } catch (error) {
+      console.error("Vote failed", error);
     }
   };
 
@@ -103,25 +93,23 @@ export default function IssuesPage() {
                       : "border-slate-800 bg-slate-900/60"
                   }`}
               >
-                {/* Vote Column */}
-                <div className="flex flex-col items-center gap-1 text-slate-400">
+                {/* Upvote */}
+                <div className="flex flex-col items-center gap-1">
                   <button
-                    onClick={() => vote(issue._id, 1)}
-                    className="hover:text-indigo-400 transition"
+                    onClick={() => upvote(issue._id)}
+                    disabled={issue.hasVoted}
+                    className={`transition ${
+                      issue.hasVoted
+                        ? "text-indigo-400 cursor-not-allowed"
+                        : "text-slate-400 hover:text-indigo-400"
+                    }`}
                   >
-                    <ArrowBigUp size={24} />
+                    <ArrowBigUp size={26} />
                   </button>
 
                   <span className="font-semibold text-white">
                     {issue.votes}
                   </span>
-
-                  <button
-                    onClick={() => vote(issue._id, -1)}
-                    className="hover:text-rose-400 transition"
-                  >
-                    <ArrowBigDown size={24} />
-                  </button>
                 </div>
 
                 {/* Content */}
