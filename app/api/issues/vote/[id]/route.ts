@@ -4,25 +4,55 @@ import { NextResponse } from "next/server";
 import Issue from "@/models/Issue";
 import { connectDB } from "@/lib/db";
 
-export async function GET(req: Request) {
+export async function POST(
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+) {
   try {
     await connectDB();
 
-    const userId = req.headers.get("x-user-id"); // optional
+    const { id } = await context.params;
+    const { userId } = await req.json();
 
-    const issues = await Issue.find().lean();
+    if (!userId) {
+      return NextResponse.json(
+        { message: "User not authenticated" },
+        { status: 401 }
+      );
+    }
 
-    const data = issues.map((issue: any) => ({
-      ...issue,
-      hasVoted: userId
-        ? issue.voters.some((v: any) => v.userId === userId)
-        : false,
-    }));
+    const issue = await Issue.findById(id);
 
-    return NextResponse.json({ success: true, data });
+    if (!issue) {
+      return NextResponse.json(
+        { message: "Issue not found" },
+        { status: 404 }
+      );
+    }
+
+    // ❌ Block multiple votes
+    const alreadyVoted = issue.voters.some(
+      (v: any) => v.userId === userId
+    );
+
+    if (alreadyVoted) {
+      return NextResponse.json(
+        { votes: issue.votes },
+        { status: 200 }
+      );
+    }
+
+    // ✅ Upvote once
+    issue.votes += 1;
+    issue.voters.push({ userId, vote: 1 });
+
+    await issue.save();
+
+    return NextResponse.json({ votes: issue.votes });
   } catch (error) {
+    console.error("Vote API error:", error);
     return NextResponse.json(
-      { success: false },
+      { message: "Server error" },
       { status: 500 }
     );
   }
