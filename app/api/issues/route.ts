@@ -4,14 +4,19 @@ import { NextResponse } from "next/server";
 import Issue from "@/models/Issue";
 import { connectDB } from "@/lib/db";
 
-/* -------------------- GET ALL ISSUES -------------------- */
+/* -------------------- GET ISSUES -------------------- */
 export async function GET(req: Request) {
   try {
     await connectDB();
 
-    const userId = req.headers.get("x-user-id");
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get("userId");
 
-    const issues = await Issue.find()
+    // ✅ If userId exists → fetch only that user's issues
+    // ✅ Else → fetch all issues (public feed)
+    const filter = userId ? { userId } : {};
+
+    const issues = await Issue.find(filter)
       .sort({ votes: -1, createdAt: -1 })
       .lean();
 
@@ -20,11 +25,10 @@ export async function GET(req: Request) {
       title: issue.title,
       description: issue.description,
       status: issue.status,
+      location: issue.location,
+      department: issue.department,
       createdAt: issue.createdAt,
       votes: issue.votes,
-      hasVoted: userId
-        ? issue.voters.some((v: any) => v.userId === userId)
-        : false,
     }));
 
     return NextResponse.json({ success: true, data });

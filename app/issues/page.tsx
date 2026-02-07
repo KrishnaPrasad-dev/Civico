@@ -86,12 +86,7 @@ export default function IssuesPage() {
             return (
               <div
                 key={issue._id}
-                className={`flex gap-4 rounded-xl border p-5 transition
-                  ${
-                    isTop
-                      ? "border-indigo-500/60 bg-indigo-500/5 shadow-lg"
-                      : "border-slate-800 bg-slate-900/60"
-                  }`}
+                className={"flex gap-4 rounded-xl border p-5 transition border-indigo-500/60 bg-indigo-500/5 shadow-lg"}
               >
                 {/* Upvote */}
                 <div className="flex flex-col items-center gap-1">
