@@ -87,11 +87,18 @@ export default function RaiseIssuePage() {
     })
 
     if (!res.ok) {
-      const error = await res.json()
-      alert(error.message || 'Failed to create issue')
-      setSubmitting(false)
-      return
-    }
+  let message = 'Failed to create issue'
+  try {
+    const error = await res.json()
+    message = error.message || message
+  } catch {
+    // backend did not return JSON
+  }
+  alert(message)
+  setSubmitting(false)
+  return
+}
+
 
     router.push('/dashboard')
   }
