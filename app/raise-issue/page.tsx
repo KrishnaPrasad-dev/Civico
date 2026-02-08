@@ -1,107 +1,123 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Navbar from '@/components/layout/Navbar'
-import { AlertCircle, FileText } from 'lucide-react'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Navbar from "@/components/layout/Navbar";
+import { ImagePlus, X } from "lucide-react";
 
 const departments = [
-  { label: 'Fire', value: 'fire', emoji: '🔥' },
-  { label: 'Water', value: 'water', emoji: '💧' },
-  { label: 'GHMC', value: 'ghmc', emoji: '🏙️' },
-  { label: 'Electricity', value: 'electricity', emoji: '⚡' },
-  { label: 'Roads', value: 'roads', emoji: '🛣️' },
-]
+  { label: "Fire", value: "fire", emoji: "🔥" },
+  { label: "Water", value: "water", emoji: "💧" },
+  { label: "GHMC", value: "ghmc", emoji: "🏙️" },
+  { label: "Electricity", value: "electricity", emoji: "⚡" },
+  { label: "Roads", value: "roads", emoji: "🛣️" },
+];
 
 export default function RaiseIssuePage() {
-  const router = useRouter()
+  const router = useRouter();
 
   const [form, setForm] = useState({
-    title: '',
-    description: '',
-    location: '',
-    department: '',
-  })
+    title: "",
+    description: "",
+    location: "",
+    department: "",
+  });
 
-  const [detecting, setDetecting] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
+  const [images, setImages] = useState<File[]>([]);
+  const [detecting, setDetecting] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+
+    const files = Array.from(e.target.files);
+
+    // limit to 4 images
+    const validFiles = files.slice(0, 4 - images.length);
+
+    setImages((prev) => [...prev, ...validFiles]);
+  };
+
+  const removeImage = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const detectLocation = () => {
     if (!navigator.geolocation) {
-      alert('Geolocation not supported')
-      return
+      alert("Geolocation not supported");
+      return;
     }
 
-    setDetecting(true)
+    setDetecting(true);
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const { latitude, longitude } = position.coords
+        const { latitude, longitude } = position.coords;
         setForm((prev) => ({
           ...prev,
           location: `Lat ${latitude.toFixed(4)}, Lng ${longitude.toFixed(4)}`,
-        }))
-        setDetecting(false)
+        }));
+        setDetecting(false);
       },
       () => {
-        alert('Location permission denied')
-        setDetecting(false)
+        alert("Location permission denied");
+        setDetecting(false);
       }
-    )
-  }
+    );
+  };
 
-  // 🔥 THIS IS THE FIX
+  /* -------------------- SUBMIT -------------------- */
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const storedUser = localStorage.getItem('user')
+    const storedUser = localStorage.getItem("user");
     if (!storedUser) {
-      alert('User not logged in')
-      return
+      alert("User not logged in");
+      return;
     }
 
-    const user = JSON.parse(storedUser)
+    const user = JSON.parse(storedUser);
+    setSubmitting(true);
 
-    setSubmitting(true)
+  const formData = new FormData();
+formData.append("title", form.title);
+formData.append("description", form.description);
+formData.append("location", form.location);
+formData.append("department", form.department);
+formData.append("userId", user._id || user.id);
+formData.append("userName", user.fullName); // ✅ THIS LINE
 
-    const res = await fetch('/api/issues', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        title: form.title,
-        description: form.description,
-        location: form.location,
-        department: form.department,
-        userId: user._id || user.id, // ✅ handles both cases
-      }),
-    })
+
+    images.forEach((img) => {
+      formData.append("images", img);
+    });
+
+    const res = await fetch("/api/issues", {
+      method: "POST",
+      body: formData,
+    });
 
     if (!res.ok) {
-  let message = 'Failed to create issue'
-  try {
-    const error = await res.json()
-    message = error.message || message
-  } catch {
-    // backend did not return JSON
-  }
-  alert(message)
-  setSubmitting(false)
-  return
-}
+      let message = "Failed to create issue";
+      try {
+        const error = await res.json();
+        message = error.message || message;
+      } catch {}
+      alert(message);
+      setSubmitting(false);
+      return;
+    }
 
-
-    router.push('/dashboard')
-  }
+    router.push("/dashboard");
+  };
 
   return (
     <section className="min-h-screen w-full bg-slate-950">
@@ -112,7 +128,7 @@ export default function RaiseIssuePage() {
           <h1 className="text-2xl sm:text-3xl font-bold text-white">
             Raise an Issue
           </h1>
-          <p className="text-slate-400 mt-2 text-sm sm:text-base">
+          <p className="text-slate-400 mt-2">
             Report a civic issue to the concerned department.
           </p>
         </div>
@@ -126,18 +142,14 @@ export default function RaiseIssuePage() {
             <label className="block text-sm text-slate-300 mb-2">
               Issue Title
             </label>
-            <div className="relative">
-              
-              <input
-                type="text"
-                name="title"
-                placeholder="Enter your issue here"
-                required
-                value={form.title}
-                onChange={handleChange}
-                className="w-full pr-4 px-4 py-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white focus:ring-2 focus:ring-indigo-600"
-              />
-            </div>
+            <input
+              type="text"
+              name="title"
+              required
+              value={form.title}
+              onChange={handleChange}
+              className="w-full px-4 py-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white"
+            />
           </div>
 
           {/* Description */}
@@ -145,17 +157,55 @@ export default function RaiseIssuePage() {
             <label className="block text-sm text-slate-300 mb-2">
               Description
             </label>
-            <div className="relative">
-              
-              <textarea
-                name="description"
-                rows={4}
-                required
-                placeholder="Enter the issue description here"
-                value={form.description}
-                onChange={handleChange}
-                className="w-full  pr-4 px-4 py-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white focus:ring-2 focus:ring-indigo-600 resize-none"
-              />
+            <textarea
+              name="description"
+              rows={4}
+              required
+              value={form.description}
+              onChange={handleChange}
+              className="w-full px-4 py-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white resize-none"
+            />
+          </div>
+
+          {/* Image Upload (Twitter-style) */}
+          <div>
+            <label className="block text-sm text-slate-300 mb-2">
+              Images (optional)
+            </label>
+
+            <div className="flex gap-3 flex-wrap">
+              {images.map((img, i) => (
+                <div
+                  key={i}
+                  className="relative w-28 h-28 rounded-xl overflow-hidden border border-slate-700"
+                >
+                  <img
+                    src={URL.createObjectURL(img)}
+                    alt="preview"
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(i)}
+                    className="absolute top-1 right-1 bg-black/60 rounded-full p-1"
+                  >
+                    <X size={14} className="text-white" />
+                  </button>
+                </div>
+              ))}
+
+              {images.length < 4 && (
+                <label className="w-28 h-28 flex items-center justify-center rounded-xl border border-dashed border-slate-600 cursor-pointer hover:border-indigo-500">
+                  <ImagePlus className="text-slate-400" />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                </label>
+              )}
             </div>
           </div>
 
@@ -168,11 +218,10 @@ export default function RaiseIssuePage() {
               <input
                 type="text"
                 name="location"
-                placeholder="Enter your location"
                 required
                 value={form.location}
                 onChange={handleChange}
-                className="flex-1 px-4 py-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white focus:ring-2 focus:ring-indigo-600"
+                className="flex-1 px-4 py-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white"
               />
               <button
                 type="button"
@@ -180,7 +229,7 @@ export default function RaiseIssuePage() {
                 disabled={detecting}
                 className="px-4 rounded-lg bg-slate-700 hover:bg-slate-600 text-white"
               >
-                {detecting ? '...' : '📍'}
+                {detecting ? "..." : "📍"}
               </button>
             </div>
           </div>
@@ -211,10 +260,10 @@ export default function RaiseIssuePage() {
             disabled={submitting}
             className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg"
           >
-            {submitting ? 'Submitting...' : 'Submit Issue'}
+            {submitting ? "Submitting..." : "Submit Issue"}
           </button>
         </form>
       </div>
     </section>
-  )
+  );
 }

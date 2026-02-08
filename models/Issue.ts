@@ -1,4 +1,4 @@
-import mongoose, { Schema, models, model } from 'mongoose'
+import mongoose, { Schema, models, model } from "mongoose";
 
 const IssueSchema = new Schema(
   {
@@ -20,22 +20,34 @@ const IssueSchema = new Schema(
 
     department: {
       type: String,
-      enum: ['fire', 'water', 'ghmc', 'electricity', 'roads'],
+      enum: ["fire", "water", "ghmc", "electricity", "roads"],
       required: true,
     },
 
     status: {
       type: String,
-      enum: ['pending', 'in_progress', 'resolved'],
-      default: 'pending',
+      enum: ["pending", "in_progress", "resolved"],
+      default: "pending",
     },
 
     userId: {
-      type: String, // later you can switch to ObjectId
+      type: String,
       required: true,
     },
 
-    // 🔥 NEW: voting system
+    // ✅ NEW: author name (THIS FIXES YOUR PROBLEM)
+    userName: {
+      type: String,
+      required: true,
+    },
+
+    // 🖼️ Issue images
+    images: {
+      type: [String],
+      default: [],
+    },
+
+    // 🔥 Voting system
     votes: {
       type: Number,
       default: 0,
@@ -44,11 +56,11 @@ const IssueSchema = new Schema(
     voters: [
       {
         userId: {
-          type: String, // same as userId above
+          type: String,
           required: true,
         },
         vote: {
-          type: Number, // 1 = upvote, -1 = downvote
+          type: Number,
           enum: [1, -1],
           required: true,
         },
@@ -56,6 +68,6 @@ const IssueSchema = new Schema(
     ],
   },
   { timestamps: true }
-)
+);
 
-export default models.Issue || model('Issue', IssueSchema)
+export default models.Issue || model("Issue", IssueSchema);

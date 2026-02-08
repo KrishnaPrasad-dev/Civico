@@ -109,7 +109,7 @@ export default function Hero() {
           local issues transparently and efficiently.
         </p>
 
-        <div className="w-full max-w-xl mt-10 bg-black/30 backdrop-blur-md rounded-xl p-4">
+        <div className="w-full max-w-xl mt-10 border border-white/50 bg-black/30 backdrop-blur-md rounded-xl p-4">
           <textarea
             placeholder="Describe a civic issue you want to report..."
             className="w-full bg-transparent outline-none resize-none text-white placeholder-white"
