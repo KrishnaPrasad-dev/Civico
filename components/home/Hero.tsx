@@ -1,60 +1,74 @@
 "use client";
+
+import { useEffect, useState } from "react";
 import SplitText from "../animations/Splittext";
 import RoleCard from "../ui/RoleCard";
 import Hyperspeed from "../animations/hyperspeed";
 
 export default function Hero() {
+  const [showBackground, setShowBackground] = useState(false);
+
+  useEffect(() => {
+    // ✅ Wait for first paint + viewport stabilization
+    const raf = requestAnimationFrame(() => {
+      setShowBackground(true);
+    });
+
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
   return (
-    <section className="relative overflow-hidden text-white">
+    <section className="relative text-white">
       {/* ================= BACKGROUND ================= */}
-      <div
-        className="
-          absolute inset-0 
-          -z-10 
-          h-screen
-          transform
-          -translate-y-24
-          md:translate-y-0
-        "
-      >
-        <Hyperspeed
-          effectOptions={{
-            distortion: "turbulentDistortion",
-            length: 420,
-            roadWidth: 10,
-            islandWidth: 2,
-            lanesPerRoad: 3,
-            fov: 95,
-            fovSpeedUp: 180,
-            speedUp: 1.6,
-            carLightsFade: 0.35,
-            totalSideLightSticks: 30,
-            lightPairsPerRoadWay: 50,
-            shoulderLinesWidthPercentage: 0.06,
-            brokenLinesWidthPercentage: 0.12,
-            brokenLinesLengthPercentage: 0.55,
-            lightStickWidth: [0.15, 0.6],
-            lightStickHeight: [1.4, 2.1],
-            movingAwaySpeed: [70, 95],
-            movingCloserSpeed: [-160, -220],
-            carLightsLength: [18, 90],
-            carLightsRadius: [0.08, 0.18],
-            carWidthPercentage: [0.32, 0.55],
-            carShiftX: [-0.9, 0.9],
-            carFloorSeparation: [0, 6],
-            colors: {
-              roadColor: 0x080808,
-              islandColor: 0x0f0f0f,
-              background: 0x000000,
-              shoulderLines: 0x1e90ff,
-              brokenLines: 0x1e90ff,
-              leftCars: [0xff4d6d, 0xffa600, 0xff007f],
-              rightCars: [0x00e5ff, 0x7cff00, 0x00ffa6],
-              sticks: 0x00e5ff,
-            },
-          }}
-        />
-      </div>
+      {showBackground && (
+        <div
+          className="
+            absolute inset-0
+            -z-10
+            h-[100svh]
+            w-full
+            overflow-hidden
+          "
+        >
+          <Hyperspeed
+            effectOptions={{
+              distortion: "turbulentDistortion",
+              length: 420,
+              roadWidth: 10,
+              islandWidth: 2,
+              lanesPerRoad: 3,
+              fov: 95,
+              fovSpeedUp: 180,
+              speedUp: 1.6,
+              carLightsFade: 0.35,
+              totalSideLightSticks: 30,
+              lightPairsPerRoadWay: 50,
+              shoulderLinesWidthPercentage: 0.06,
+              brokenLinesWidthPercentage: 0.12,
+              brokenLinesLengthPercentage: 0.55,
+              lightStickWidth: [0.15, 0.6],
+              lightStickHeight: [1.4, 2.1],
+              movingAwaySpeed: [70, 95],
+              movingCloserSpeed: [-160, -220],
+              carLightsLength: [18, 90],
+              carLightsRadius: [0.08, 0.18],
+              carWidthPercentage: [0.32, 0.55],
+              carShiftX: [-0.9, 0.9],
+              carFloorSeparation: [0, 6],
+              colors: {
+                roadColor: 0x080808,
+                islandColor: 0x0f0f0f,
+                background: 0x000000,
+                shoulderLines: 0x1e90ff,
+                brokenLines: 0x1e90ff,
+                leftCars: [0xff4d6d, 0xffa600, 0xff007f],
+                rightCars: [0x00e5ff, 0x7cff00, 0x00ffa6],
+                sticks: 0x00e5ff,
+              },
+            }}
+          />
+        </div>
+      )}
 
       {/* Overlay */}
       <div className="absolute inset-0 -z-10 bg-black/20" />
@@ -63,7 +77,7 @@ export default function Hero() {
       <div
         className="
           relative z-10
-          min-h-[90vh]
+          min-h-[100svh]
           flex flex-col
           items-center
           justify-start md:justify-center
@@ -95,10 +109,11 @@ export default function Hero() {
           local issues transparently and efficiently.
         </p>
 
-        <div className="w-full max-w-xl mt-10   w-full  bg-black/30 border-1 backdrop-blur-md rounded-xl p-4">
+        <div className="w-full max-w-xl mt-10 bg-black/30 backdrop-blur-md rounded-xl p-4">
           <textarea
             placeholder="Describe a civic issue you want to report..."
             className="w-full bg-transparent outline-none resize-none text-white placeholder-white"
+            rows={4}
           />
 
           <button className="mt-4 ml-auto block bg-indigo-600 hover:bg-indigo-700 transition px-6 py-2 rounded-md">
