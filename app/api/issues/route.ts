@@ -3,14 +3,14 @@ export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import Issue from "@/models/Issue";
 import { connectDB } from "@/lib/db";
-import fs from "fs";
-import path from "path";
+import { v2 as cloudinary } from "cloudinary";
 
-/* -------------------- TYPES -------------------- */
-type UploadedFile = Blob & {
-  name: string;
-  type: string;
-};
+/* -------------------- CLOUDINARY CONFIG -------------------- */
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
+  api_key: process.env.CLOUDINARY_API_KEY!,
+  api_secret: process.env.CLOUDINARY_API_SECRET!,
+});
 
 /* -------------------- GET ISSUES -------------------- */
 export async function GET(req: Request) {
@@ -26,20 +26,19 @@ export async function GET(req: Request) {
       .sort({ votes: -1, createdAt: -1 })
       .lean();
 
-    const data = issues.map((issue) => ({
-  _id: issue._id,
-  title: issue.title,
-  description: issue.description,
-  status: issue.status,
-  location: issue.location,
-  department: issue.department,
-  createdAt: issue.createdAt,
-  votes: issue.votes,
-  images: issue.images ?? [],
-  userId: issue.userId,        // ✅ REQUIRED
-  userName: issue.userName,    // ✅ THIS WAS MISSING
-}));
-
+    const data = issues.map((issue: any) => ({
+      _id: issue._id,
+      title: issue.title,
+      description: issue.description,
+      status: issue.status,
+      location: issue.location,
+      department: issue.department,
+      createdAt: issue.createdAt,
+      votes: issue.votes,
+      images: issue.images ?? [],
+      userId: issue.userId,
+      userName: issue.userName,
+    }));
 
     return NextResponse.json({ success: true, data });
   } catch (error) {
@@ -51,14 +50,12 @@ export async function GET(req: Request) {
   }
 }
 
-/* -------------------- CREATE ISSUE (WITH IMAGES) -------------------- */
+/* -------------------- CREATE ISSUE (WITH CLOUDINARY IMAGES) -------------------- */
 export async function POST(req: Request) {
   try {
     await connectDB();
 
     const formData = await req.formData();
-
-   
 
     const title = formData.get("title")?.toString();
     const description = formData.get("description")?.toString();
@@ -76,22 +73,12 @@ export async function POST(req: Request) {
       !userName
     ) {
       return NextResponse.json(
-        {
-          message: "All fields are required",
-          received: {
-            title,
-            description,
-            location,
-            department,
-            userId,
-            userName,
-          },
-        },
+        { message: "All fields are required" },
         { status: 400 }
       );
     }
 
-    const files = formData.getAll("images") as UploadedFile[];
+    const files = formData.getAll("images") as File[];
     const imageUrls: string[] = [];
 
     if (files.length > 4) {
@@ -101,25 +88,24 @@ export async function POST(req: Request) {
       );
     }
 
-    const uploadDir = path.join(process.cwd(), "public/uploads/issues");
-
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-
     for (const file of files) {
       if (!file.type.startsWith("image/")) continue;
 
       const buffer = Buffer.from(await file.arrayBuffer());
 
-      const ext = file.name.split(".").pop() || "png";
-      const filename = `issue_${Date.now()}_${Math.random()
-        .toString(36)
-        .slice(2)}.${ext}`;
+      const uploadResult = await new Promise<any>((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream(
+            { folder: "civico/issues" },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          )
+          .end(buffer);
+      });
 
-      fs.writeFileSync(path.join(uploadDir, filename), buffer);
-
-      imageUrls.push(`/uploads/issues/${filename}`);
+      imageUrls.push(uploadResult.secure_url);
     }
 
     const issue = await Issue.create({
@@ -128,7 +114,7 @@ export async function POST(req: Request) {
       location,
       department,
       userId,
-      userName, // 👈 SAVED HERE
+      userName,
       images: imageUrls,
     });
 
