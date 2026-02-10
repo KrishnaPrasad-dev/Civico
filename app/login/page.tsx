@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
+import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -12,6 +13,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [show, setShow] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,8 +56,8 @@ export default function LoginPage() {
       <div className="flex flex-col items-center justify-center px-7 mb-12 mx-auto ">
         <div className="absolute top-0 z-[-2] h-screen w-screen bg-neutral-950 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]" />
         <h1 className="text-3xl font-bold leading-tight mb-12 md:mt-12 mt-16 relative  tracking-tight text-gray-900 md:text-4xl dark:text-white">
-                Login Page
-              </h1>
+          Login Page
+        </h1>
 
         {/* Card */}
         <div className="relative w-full sm:max-w-md  bg-gray-800  rounded-3xl shadow-lg">
@@ -65,10 +67,7 @@ export default function LoginPage() {
                 Log in to your Account
               </h1>
 
-              <form
-                onSubmit={handleSubmit}
-                className="space-y-4 md:space-y-6"
-              >
+              <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
                 {/* Email */}
                 <div>
                   <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -91,16 +90,27 @@ export default function LoginPage() {
                   <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                     Password
                   </label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-                    focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5
-                    dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    required
-                  />
+
+                  <div className="relative">
+                    <input
+                      type={show ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
+      focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 pr-10
+      dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      required
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => setShow(!show)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-indigo-500"
+                    >
+                      {show ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </div>
 
                 {/* Error */}
