@@ -905,11 +905,12 @@ function resizeRendererToDisplaySize(
   setSize: (width: number, height: number, updateStyle: boolean) => void
 ) {
   const canvas = renderer.domElement;
-  const width = canvas.clientWidth;
-  const height = canvas.clientHeight;
+  const pixelRatio = renderer.getPixelRatio();
+  const width = Math.floor(canvas.clientWidth * pixelRatio);
+  const height = Math.floor(canvas.clientHeight * pixelRatio);
   const needResize = canvas.width !== width || canvas.height !== height;
   if (needResize) {
-    setSize(width, height, false);
+    setSize(canvas.clientWidth, canvas.clientHeight, false);
   }
   return needResize;
 }
@@ -935,6 +936,7 @@ class App {
   speedUpTarget: number;
   speedUp: number;
   timeOffset: number;
+  onWindowResizeBound: () => void;
 
   constructor(container: HTMLElement, options: HyperspeedOptions) {
     this.options = options;
@@ -952,6 +954,9 @@ class App {
     });
     this.renderer.setSize(container.offsetWidth, container.offsetHeight, false);
     this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.domElement.style.width = '100%';
+    this.renderer.domElement.style.height = '100%';
+    this.renderer.domElement.style.display = 'block';
 
     this.composer = new EffectComposer(this.renderer);
     container.appendChild(this.renderer.domElement);
@@ -1008,8 +1013,9 @@ class App {
     this.onTouchStart = this.onTouchStart.bind(this);
     this.onTouchEnd = this.onTouchEnd.bind(this);
     this.onContextMenu = this.onContextMenu.bind(this);
+    this.onWindowResizeBound = this.onWindowResize.bind(this);
 
-    window.addEventListener('resize', this.onWindowResize.bind(this));
+    window.addEventListener('resize', this.onWindowResizeBound);
   }
 
   onWindowResize() {
@@ -1186,7 +1192,7 @@ class App {
       this.scene.clear();
     }
 
-    window.removeEventListener('resize', this.onWindowResize.bind(this));
+    window.removeEventListener('resize', this.onWindowResizeBound);
     if (this.container) {
       this.container.removeEventListener('mousedown', this.onMouseDown);
       this.container.removeEventListener('mouseup', this.onMouseUp);
@@ -1255,7 +1261,7 @@ const Hyperspeed: FC<HyperspeedProps> = ({ effectOptions = {} }) => {
     };
   }, [mergedOptions]);
 
-  return <div id="lights" className="w-full h-full" ref={hyperspeed}></div>;
+  return <div id="lights" className="w-full h-full overflow-hidden" ref={hyperspeed}></div>;
 };
 
 export default Hyperspeed;

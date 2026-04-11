@@ -18,7 +18,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative text-white">
+    <section className="relative w-full overflow-x-clip text-white">
       {/* ================= BACKGROUND ================= */}
       {showBackground && (
         <div
