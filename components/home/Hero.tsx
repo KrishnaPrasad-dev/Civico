@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import SplitText from "../animations/Splittext";
 import RoleCard from "../ui/RoleCard";
 import Hyperspeed from "../animations/hyperspeed";
@@ -269,12 +270,18 @@ export default function Hero() {
           </p>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-            <button className="rounded-md bg-cyan-500 px-6 py-3 font-medium text-black transition hover:bg-cyan-400">
+            <Link
+              href="/raise-issue"
+              className="rounded-md bg-cyan-500 px-6 py-3 font-medium text-black transition hover:bg-cyan-400"
+            >
               Raise an Issue
-            </button>
-            <button className="rounded-md border border-white/30 px-6 py-3 font-medium text-white transition hover:bg-white/10">
+            </Link>
+            <Link
+              href="/issues"
+              className="rounded-md border border-white/30 px-6 py-3 font-medium text-white transition hover:bg-white/10"
+            >
               View All Issues
-            </button>
+            </Link>
           </div>
         </div>
       </section>

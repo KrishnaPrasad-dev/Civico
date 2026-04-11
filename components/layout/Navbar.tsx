@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import AnimatedButton from "../ui/AnimatedButton";
 
 type NavbarProps = {
@@ -10,6 +11,36 @@ type NavbarProps = {
 
 export default function Navbar({ variant = "public" }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
+  const [authChecked, setAuthChecked] = useState(false);
+
+  useEffect(() => {
+    const syncAuthState = () => {
+      const token = localStorage.getItem("token");
+      const user = localStorage.getItem("user");
+      setIsLoggedIn(Boolean(token && user));
+      setAuthChecked(true);
+    };
+
+    syncAuthState();
+
+    window.addEventListener("storage", syncAuthState);
+    window.addEventListener("focus", syncAuthState);
+
+    return () => {
+      window.removeEventListener("storage", syncAuthState);
+      window.removeEventListener("focus", syncAuthState);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    setMenuOpen(false);
+    router.push("/login");
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/40 backdrop-blur-md">
@@ -38,12 +69,21 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
 
         {/* Right side */}
         <div className="flex items-center gap-4">
-          {variant === "public" && (
+          {variant === "public" && authChecked && !isLoggedIn && (
             <AnimatedButton
-              text="Sign up"
-              href="/signup"
+              text="Login"
+              href="/login"
               className="hidden md:inline-flex"
             />
+          )}
+
+          {variant === "public" && authChecked && isLoggedIn && (
+            <button
+              onClick={handleLogout}
+              className="hidden md:inline-flex items-center justify-center px-6 py-3 rounded-md bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition"
+            >
+              Logout
+            </button>
           )}
 
           {/* Hamburger */}
@@ -93,14 +133,23 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
               Roles
             </Link>
 
-            {variant === "public" && (
+            {variant === "public" && authChecked && !isLoggedIn && (
               <Link
-                href="/signup"
+                href="/login"
                 onClick={() => setMenuOpen(false)}
                 className="mt-4 inline-flex items-center justify-center px-6 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 transition"
               >
-                Sign up
+                Login
               </Link>
+            )}
+
+            {variant === "public" && authChecked && isLoggedIn && (
+              <button
+                onClick={handleLogout}
+                className="mt-4 inline-flex items-center justify-center px-6 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 transition"
+              >
+                Logout
+              </button>
             )}
           </nav>
         </div>
