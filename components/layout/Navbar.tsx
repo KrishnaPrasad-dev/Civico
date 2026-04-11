@@ -45,25 +45,25 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/40 backdrop-blur-md">
       {/* TOP BAR */}
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-5 py-3 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="text-white font-semibold text-xl">
+        <Link href="/" className="text-white font-semibold text-lg">
           CIVICO
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-8 text-white/90">
+        <nav className="hidden md:flex items-center gap-6 text-sm text-white/90">
           <Link href="/dashboard" className="hover:text-indigo-400">
             Dashboard
           </Link>
-          <Link href="#" className="hover:text-indigo-400">
+          <Link href="/civic-posts" className="hover:text-indigo-400">
             Civic Posts
           </Link>
           <Link href="/issues" className="hover:text-indigo-400">
             Issues
           </Link>
-          <Link href="#" className="hover:text-indigo-400">
-            Roles
+          <Link href="/civic-posts#departments" className="hover:text-indigo-400">
+            Departments
           </Link>
         </nav>
 
@@ -110,7 +110,7 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
             </Link>
 
             <Link
-              href="#"
+              href="/civic-posts"
               onClick={() => setMenuOpen(false)}
               className="hover:text-indigo-400"
             >
@@ -126,11 +126,11 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
             </Link>
 
             <Link
-              href="#"
+              href="/civic-posts#departments"
               onClick={() => setMenuOpen(false)}
               className="hover:text-indigo-400"
             >
-              Roles
+              Departments
             </Link>
 
             {variant === "public" && authChecked && !isLoggedIn && (

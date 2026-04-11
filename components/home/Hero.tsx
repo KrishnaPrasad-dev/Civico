@@ -128,7 +128,7 @@ export default function Hero() {
       )}
 
       {/* Overlay */}
-      <div className="absolute inset-0 -z-10 bg-black/20" />
+      <div className="absolute inset-0 -z-10 bg-[#0d1018]/45" />
 
       {/* ================= HERO ================= */}
       <div
@@ -185,7 +185,7 @@ export default function Hero() {
       </div>
 
       {/* ================= ROLES ================= */}
-      <section className="relative z-10 py-24 px-6 bg-black/40">
+      <section className="relative z-10 py-24 px-6 bg-[#11141d]/65">
         <h2 className="text-center text-3xl md:text-4xl font-semibold">
           Built for everyone involved
         </h2>
@@ -213,7 +213,7 @@ export default function Hero() {
         </div>
       </section>
 
-      <section className="relative z-10 px-6 py-20 bg-black/30">
+      <section className="relative z-10 px-6 py-20 bg-[#0f1219]/70">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-center text-3xl md:text-4xl font-semibold">
             How CIVICO works
@@ -237,7 +237,7 @@ export default function Hero() {
         </div>
       </section>
 
-      <section className="relative z-10 px-6 py-20 bg-gradient-to-b from-black/25 to-black/50">
+      <section className="relative z-10 px-6 py-20 bg-gradient-to-b from-[#131722]/70 to-[#0b0e15]/80">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-center text-3xl md:text-4xl font-semibold">
             Common civic issues covered
@@ -260,7 +260,7 @@ export default function Hero() {
         </div>
       </section>
 
-      <section className="relative z-10 px-6 py-24 bg-black/60">
+      <section className="relative z-10 px-6 py-24 bg-[#10131b]/80">
         <div className="max-w-4xl mx-auto rounded-2xl border border-cyan-300/40 bg-cyan-950/30 p-8 md:p-12 text-center">
           <h2 className="text-3xl md:text-4xl font-semibold">
             Ready to make your neighborhood better?

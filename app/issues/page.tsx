@@ -197,7 +197,7 @@ export default function IssuesPage() {
   }
 
   return (
-    <section className="min-h-screen bg-black text-white">
+    <section className="min-h-screen bg-gradient-to-b from-[#0f131d] via-[#0b0e15] to-[#080a10] text-white">
       <Navbar />
 
       <div className="mx-auto flex w-full max-w-7xl gap-6 px-4 py-6 md:px-6">
@@ -214,8 +214,8 @@ export default function IssuesPage() {
           </button>
         </aside>
 
-        <main className="min-w-0 flex-1 overflow-hidden rounded-2xl border border-white/10 bg-black">
-          <div className="sticky top-0 z-10 border-b border-white/10 bg-black/85 px-4 py-3 backdrop-blur-md">
+        <main className="min-w-0 flex-1 overflow-hidden rounded-2xl border border-white/10 bg-[#0a0d14]/85">
+          <div className="sticky top-0 z-10 border-b border-white/10 bg-[#0f131c]/90 px-4 py-3 backdrop-blur-md">
             <h1 className="text-xl font-bold">Civic Feed</h1>
             <p className="mt-1 text-sm text-gray-400">Live reports from your city</p>
             {actionMessage && (
