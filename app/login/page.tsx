@@ -41,8 +41,12 @@ export default function LoginPage() {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
+      const redirectTo =
+        new URLSearchParams(window.location.search).get("redirect") ||
+        "/dashboard";
+
       // ✅ Redirect after login
-      router.push("/dashboard");
+      router.push(redirectTo);
     } catch (err) {
       setError("Something went wrong. Please try again.");
       setLoading(false);

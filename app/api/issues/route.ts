@@ -38,6 +38,12 @@ export async function GET(req: Request) {
       images: issue.images ?? [],
       userId: issue.userId,
       userName: issue.userName,
+      comments: (issue.comments ?? []).map((comment: any) => ({
+        userId: comment.userId,
+        userName: comment.userName,
+        text: comment.text,
+        createdAt: comment.createdAt,
+      })),
     }));
 
     return NextResponse.json({ success: true, data });

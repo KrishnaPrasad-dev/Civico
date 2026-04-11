@@ -53,19 +53,48 @@ const IssueSchema = new Schema(
       default: 0,
     },
 
-    voters: [
-      {
-        userId: {
-          type: String,
-          required: true,
+    voters: {
+      type: [
+        {
+          userId: {
+            type: String,
+            required: true,
+          },
+          vote: {
+            type: Number,
+            enum: [1, -1],
+            required: true,
+          },
         },
-        vote: {
-          type: Number,
-          enum: [1, -1],
-          required: true,
+      ],
+      default: [],
+    },
+
+    comments: {
+      type: [
+        {
+          userId: {
+            type: String,
+            required: true,
+          },
+          userName: {
+            type: String,
+            required: true,
+          },
+          text: {
+            type: String,
+            required: true,
+            trim: true,
+            maxlength: 500,
+          },
+          createdAt: {
+            type: Date,
+            default: Date.now,
+          },
         },
-      },
-    ],
+      ],
+      default: [],
+    },
   },
   { timestamps: true }
 );

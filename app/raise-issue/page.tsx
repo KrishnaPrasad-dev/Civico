@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import { ImagePlus, X } from "lucide-react";
@@ -26,6 +26,14 @@ export default function RaiseIssuePage() {
   const [images, setImages] = useState<File[]>([]);
   const [detecting, setDetecting] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const draft = localStorage.getItem("issueDraft");
+    if (!draft) return;
+
+    setForm((prev) => ({ ...prev, description: draft }));
+    localStorage.removeItem("issueDraft");
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<
