@@ -34,6 +34,17 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
     };
   }, []);
 
+  useEffect(() => {
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -91,6 +102,8 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
             onClick={() => setMenuOpen(!menuOpen)}
             className="md:hidden text-white text-2xl"
             aria-label="Toggle menu"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-nav"
           >
             ☰
           </button>
@@ -99,7 +112,10 @@ export default function Navbar({ variant = "public" }: NavbarProps) {
 
       {/* 🔥 MOBILE MENU (DROPDOWN, NOT MODAL) */}
       {menuOpen && (
-        <div className="md:hidden w-full bg-black/70 backdrop-blur-md border-t border-white/10">
+        <div
+          id="mobile-nav"
+          className="md:hidden w-full bg-black/70 backdrop-blur-md border-t border-white/10"
+        >
           <nav className="flex flex-col px-6 py-6 gap-6 text-white text-lg">
             <Link
               href="/dashboard"

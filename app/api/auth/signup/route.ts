@@ -7,7 +7,7 @@ import User from "@/models/User";
 export async function POST(req: Request) {
   try {
     // 1️⃣ Read request body
-    const { fullName, email, password, confirmPassword } = await req.json();
+    const { fullName, email, password, confirmPassword, role } = await req.json();
 
     // 2️⃣ Validate inputs
     if (!fullName || !email || !password || !confirmPassword) {
@@ -27,6 +27,13 @@ export async function POST(req: Request) {
     if (password.length < 6) {
       return NextResponse.json(
         { success: false, message: "Password must be at least 6 characters" },
+        { status: 400 }
+      );
+    }
+
+    if (role && !["citizen", "department"].includes(role)) {
+      return NextResponse.json(
+        { success: false, message: "Invalid account type" },
         { status: 400 }
       );
     }
@@ -52,6 +59,7 @@ export async function POST(req: Request) {
       fullName,
       email,
       password: hashedPassword,
+      role: role || "citizen",
     });
 
     // 7️⃣ Success response (safe data only)

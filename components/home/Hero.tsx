@@ -47,6 +47,7 @@ export default function Hero() {
   const router = useRouter();
   const [showBackground, setShowBackground] = useState(false);
   const [draftIssue, setDraftIssue] = useState("");
+  const draftLimit = 500;
 
   const issueCategories = [
     {
@@ -173,7 +174,13 @@ export default function Hero() {
             onChange={(e) => setDraftIssue(e.target.value)}
             className="w-full bg-transparent outline-none resize-none text-white placeholder-white"
             rows={4}
+            maxLength={draftLimit}
+            aria-label="Issue draft"
           />
+
+          <div className="mt-2 flex justify-end text-xs text-white/70">
+            <span>{draftIssue.length}/{draftLimit}</span>
+          </div>
 
           <button
             onClick={handleStartReporting}

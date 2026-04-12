@@ -14,10 +14,15 @@ type ProfileForm = {
   state: string
 }
 
-async function parseResponseBody(res: Response): Promise<any> {
+async function parseResponseBody(res: Response): Promise<unknown> {
   const ct = res.headers.get('content-type') || ''
   if (ct.includes('application/json')) return await res.json()
   return await res.text().catch(() => '')
+}
+
+function toErrorMessage(err: unknown): string {
+  if (err instanceof Error) return err.message
+  return 'Error updating profile'
 }
 
 export default function EditProfilePage() {
@@ -66,16 +71,17 @@ export default function EditProfilePage() {
         }
 
         const data = await parseResponseBody(res)
-        const safe = (v: any) => v ?? ''
+        const profile = (data && typeof data === 'object' ? data : {}) as Record<string, unknown>
+        const safe = (v: unknown) => (v ?? '') as string | number
 
         setForm({
-          fullName: safe(data.fullName),
-          address: safe(data.address),
-          bio: safe(data.bio),
-          phone: safe(data.phone),
-          age: safe(data.age),
-          city: safe(data.city),
-          state: safe(data.state),
+          fullName: String(safe(profile.fullName)),
+          address: String(safe(profile.address)),
+          bio: String(safe(profile.bio)),
+          phone: String(safe(profile.phone)),
+          age: String(safe(profile.age)),
+          city: String(safe(profile.city)),
+          state: String(safe(profile.state)),
         })
       } catch (err) {
         console.error(err)
@@ -85,20 +91,6 @@ export default function EditProfilePage() {
 
     loadProfile()
   }, [])
-
-  useEffect(() => {
-  const draft = localStorage.getItem("issueDraft");
-
-  if (draft) {
-    setForm((prev) => ({
-      ...prev,
-      description: draft,
-    }));
-
-    // clean up after using it
-    localStorage.removeItem("issueDraft");
-  }
-}, []);
 
 
   const handleChange = (
@@ -140,7 +132,11 @@ export default function EditProfilePage() {
 
       if (!res.ok) {
         const body = await parseResponseBody(res)
-        throw new Error(body?.message || 'Update failed')
+        const msg =
+          body && typeof body === 'object' && 'message' in body
+            ? String((body as { message?: unknown }).message || 'Update failed')
+            : 'Update failed'
+        throw new Error(msg)
       }
 
       toast.success('Profile updated successfully')
@@ -149,9 +145,9 @@ export default function EditProfilePage() {
       setTimeout(() => {
         router.push('/dashboard')
       }, 800)
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
-      toast.error(err.message || 'Error updating profile')
+      toast.error(toErrorMessage(err))
     } finally {
       setLoading(false)
     }

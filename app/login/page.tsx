@@ -14,19 +14,24 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [show, setShow] = useState(false);
+  const [role, setRole] = useState<"citizen" | "department">("citizen");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
+
     setError("");
     setLoading(true);
 
     try {
+      const normalizedEmail = email.trim().toLowerCase();
+
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: normalizedEmail, password, role }),
       });
 
       const data = await res.json();
@@ -41,111 +46,122 @@ export default function LoginPage() {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      const redirectTo =
-        new URLSearchParams(window.location.search).get("redirect") ||
-        "/dashboard";
+      const redirectParam = new URLSearchParams(window.location.search).get("redirect");
+      const redirectTo = redirectParam && redirectParam.startsWith("/") ? redirectParam : "/dashboard";
 
       // ✅ Redirect after login
       router.push(redirectTo);
-    } catch (err) {
+    } catch {
       setError("Something went wrong. Please try again.");
+    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <section className="min-h-screen">
+    <section className="min-h-screen bg-[#0b0f19]">
       <Navbar />
 
-      <div className="flex flex-col items-center justify-center px-7 mb-12 mx-auto ">
-        <div className="absolute top-0 z-[-2] h-screen w-screen bg-neutral-950 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]" />
-        <h1 className="text-3xl font-bold leading-tight mb-12 md:mt-12 mt-16 relative  tracking-tight text-gray-900 md:text-4xl dark:text-white">
-          Login Page
-        </h1>
+      <div className="relative mx-auto flex min-h-[calc(100svh-72px)] max-w-6xl items-center justify-center px-6 py-10">
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_15%_20%,rgba(29,155,240,0.25),transparent_40%),radial-gradient(circle_at_85%_0%,rgba(56,189,248,0.18),transparent_35%)]" />
 
-        {/* Card */}
-        <div className="relative w-full sm:max-w-md  bg-gray-800  rounded-3xl shadow-lg">
-          <div className="w-full bg-white rounded-3xl shadow dark:bg-gray-950 dark:border-gray-900">
-            <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-              <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                Log in to your Account
-              </h1>
+        <div className="grid w-full max-w-4xl gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-center">
+          <div className="hidden lg:block">
+            <p className="text-sm font-medium uppercase tracking-[0.22em] text-sky-300/90">CIVICO</p>
+            <h1 className="mt-4 text-4xl font-bold leading-tight text-white">
+              See what&apos;s happening in your city.
+            </h1>
+            <p className="mt-4 max-w-md text-sm text-slate-300">
+              Login as a citizen or department and collaborate on civic issues with transparent updates.
+            </p>
+          </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
-                {/* Email */}
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    Your email
-                  </label>
+          <div className="w-full rounded-3xl border border-white/10 bg-black/40 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
+            <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+              Sign in to CIVICO
+            </h1>
+
+            <div className="mt-5 grid grid-cols-2 gap-2 rounded-full bg-slate-900/90 p-1">
+              <button
+                type="button"
+                onClick={() => setRole("citizen")}
+                className={`rounded-full px-3 py-2 text-sm font-medium transition ${
+                  role === "citizen"
+                    ? "bg-sky-500 text-black"
+                    : "text-slate-300 hover:bg-slate-800"
+                }`}
+              >
+                Citizen
+              </button>
+              <button
+                type="button"
+                onClick={() => setRole("department")}
+                className={`rounded-full px-3 py-2 text-sm font-medium transition ${
+                  role === "department"
+                    ? "bg-sky-500 text-black"
+                    : "text-slate-300 hover:bg-slate-800"
+                }`}
+              >
+                Department
+              </button>
+            </div>
+
+            <p className="mt-3 text-xs text-slate-400">
+              Signing in as: <span className="font-semibold capitalize text-sky-300">{role}</span>
+            </p>
+
+            <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-slate-200">Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="name@gmail.com"
+                  className="block w-full rounded-xl border border-slate-700 bg-slate-900/70 px-3 py-2.5 text-sm text-white outline-none transition focus:border-sky-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-slate-200">Password</label>
+                <div className="relative">
                   <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@gmail.com"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-                    focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5
-                    dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    type={show ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="block w-full rounded-xl border border-slate-700 bg-slate-900/70 px-3 py-2.5 pr-10 text-sm text-white outline-none transition focus:border-sky-500"
                     required
                   />
-                </div>
 
-                {/* Password */}
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    Password
-                  </label>
-
-                  <div className="relative">
-                    <input
-                      type={show ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-      focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 pr-10
-      dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      required
-                    />
-
-                    <button
-                      type="button"
-                      onClick={() => setShow(!show)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-indigo-500"
-                    >
-                      {show ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Error */}
-                {error && (
-                  <p className="text-sm text-red-500 text-center">{error}</p>
-                )}
-
-                {/* Submit */}
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full text-white bg-indigo-600 hover:bg-indigo-700
-                  focus:ring-4 focus:outline-none focus:ring-indigo-300
-                  font-medium rounded-lg text-sm px-5 py-2.5 text-center
-                  disabled:opacity-50"
-                >
-                  {loading ? "Logging in..." : "Log in"}
-                </button>
-
-                {/* Signup link */}
-                <p className="text-sm font-light text-gray-500 dark:text-gray-400 text-center">
-                  Don&apos;t have an account?{" "}
-                  <Link
-                    href="/signup"
-                    className="font-medium text-indigo-600 hover:underline dark:text-indigo-500"
+                  <button
+                    type="button"
+                    onClick={() => setShow(!show)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-sky-300"
                   >
-                    Sign up here
-                  </Link>
-                </p>
-              </form>
-            </div>
+                    {show ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              {error && <p className="text-center text-sm text-rose-400">{error}</p>}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-full bg-sky-500 px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {loading ? "Logging in..." : `Login as ${role === "citizen" ? "Citizen" : "Department"}`}
+              </button>
+
+              <p className="text-center text-sm text-slate-400">
+                Don&apos;t have an account?{" "}
+                <Link href="/signup" className="font-medium text-sky-300 hover:underline">
+                  Sign up here
+                </Link>
+              </p>
+            </form>
           </div>
         </div>
       </div>

@@ -13,8 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CIVICO",
-  description: "Made by krishna & team",
+  title: "CIVICO | Civic Issue Reporting Platform",
+  description:
+    "CIVICO is a modern civic issue reporting platform that helps citizens, departments, and administrators report, track, and resolve local problems transparently.",
 };
 
 export default function RootLayout({

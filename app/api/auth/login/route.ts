@@ -8,7 +8,7 @@ import User from "@/models/User";
 export async function POST(req: Request) {
   try {
     // 1️⃣ Read request body
-    const { email, password } = await req.json();
+    const { email, password, role } = await req.json();
 
     // 2️⃣ Validate input
     if (!email || !password) {
@@ -37,6 +37,19 @@ export async function POST(req: Request) {
     if (!isPasswordCorrect) {
       return NextResponse.json(
         { success: false, message: "Invalid email or password" },
+        { status: 401 }
+      );
+    }
+
+    if (role && ["citizen", "department"].includes(role) && user.role !== role) {
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            role === "department"
+              ? "This account is not registered as a department"
+              : "This account is not registered as a citizen",
+        },
         { status: 401 }
       );
     }
